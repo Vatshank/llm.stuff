@@ -8,3 +8,7 @@ a = torch.randn(2, 3)
 b = torch.randn(3, 4)
 
 cpp_funcs.mm_torch(a, b)
+
+
+cpp_funcs.relu_fwd(a)
+cpp_funcs.layernorm_fwd()

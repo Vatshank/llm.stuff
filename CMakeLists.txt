@@ -11,6 +11,6 @@ message(STATUS "TORCH_PYTHON_LIBRARY: ${TORCH_PYTHON_LIBRARY}")
 
 link_libraries("${TORCH_LIBRARIES}" ${TORCH_PYTHON_LIBRARY})
 
-pybind11_add_module(cpp_funcs pt_binding.cpp)
+pybind11_add_module(cpp_funcs pt_binding.cpp kernels.cu)
 
 set_property(GLOBAL PROPERTY CXX_STANDARD 17)
