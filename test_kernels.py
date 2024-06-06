@@ -19,8 +19,15 @@ def test_layernorm():
     
     assert torch.isclose(y, y_hat).all()
 
+def test_softmax():
+    x = torch.randn(2, 3, 3)
+    y = F.softmax(x, dim=-1)
+    y_hat = cpp_funcs.softmax_fwd(x)
+    assert torch.isclose(y, y_hat).all()
+
 
 if __name__ == "__main__":
     test_relu()
     test_layernorm()
+    test_softmax()
     print("All tests passed!")

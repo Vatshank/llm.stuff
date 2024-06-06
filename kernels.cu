@@ -57,10 +57,40 @@ void layerNormLauncher(float* input, float* output, int B, int N, int D, float* 
 }
 
 
+__global__ void softmaxKernel(float* input, float* output, int B, int N) {
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    int BN = B * N;
+    if (idx < BN) {
+        float* offset_in = input + idx * N;
+        float sum = 0.0;
+        float max = -INFINITY;
+
+        for (int i = 0; i < N; i++) {
+            max = fmaxf(max, offset_in[i]);
+        }
+
+        for (int i = 0; i < N; i++) {
+            sum += exp(offset_in[i] - max);
+        }
+
+        float* offset_out = output + idx * N;
+        for (int i = 0; i < N; i++) {
+            offset_out[i] = exp(offset_in[i] - max) / sum;
+        }
+    }
+}
+
+void softmaxLauncher(float* input, float* output, int B, int N) {
+    int threadsPerBlock = 256;
+    int blocksPerGrid = (B * N + threadsPerBlock - 1) / threadsPerBlock;
+
+    softmaxKernel<<<blocksPerGrid, threadsPerBlock>>>(input, output, B, N);
+}
+
 // TODO: Layer norm
 // TODO: RMS norm
 // TODO: Attention (Q, K, V proj, softmax, matmul, outproj)
 // TODO: Matmul linear 1
-// TODO: sandwiched activations -- Swiglu, Relu
+// TODO: activations -- Swiglu, Relu, GeLU
 // TODO: Matmul linear 2
 // TODO: residual

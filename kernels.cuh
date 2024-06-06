@@ -6,4 +6,6 @@ void reluLauncher(float* input, float* output, int size);
 
 void layerNormLauncher(float* input, float* output, int B, int N, int D, float* gamma, float* beta);
 
+void softmaxLauncher(float* input, float* output, int B, int N);
+
 #endif // RELU_CUH
