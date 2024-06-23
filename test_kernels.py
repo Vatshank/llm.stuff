@@ -16,7 +16,6 @@ def test_layernorm():
     weight, bias = torch.randn(4), torch.randn(4)
     y = F.layer_norm(x, normalized_shape=[4], weight=weight, bias=bias)
     y_hat = cpp_funcs.layernorm_fwd(x, weight, bias)
-    
     assert torch.isclose(y, y_hat).all()
 
 def test_softmax():
@@ -25,9 +24,17 @@ def test_softmax():
     y_hat = cpp_funcs.softmax_fwd(x)
     assert torch.isclose(y, y_hat).all()
 
+def test_matmul():
+    A = torch.randn(256, 512)
+    B = torch.randn(512, 1024)
+    y = torch.matmul(A, B)
+    y_hat = cpp_funcs.matmul(A, B)
+    print((y - y_hat).abs().max())
+    assert torch.isclose(y, y_hat, atol=1e-4).all()
 
 if __name__ == "__main__":
     test_relu()
     test_layernorm()
     test_softmax()
+    test_matmul()
     print("All tests passed!")

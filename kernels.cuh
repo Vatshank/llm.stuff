@@ -8,4 +8,6 @@ void layerNormLauncher(float* input, float* output, int B, int N, int D, float* 
 
 void softmaxLauncher(float* input, float* output, int B, int N);
 
+void matmulLauncher(float* A, float* B, float* C, int N, int M, int P);
+
 #endif // RELU_CUH

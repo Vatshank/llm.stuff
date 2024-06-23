@@ -1,5 +1,26 @@
 #include <cuda_runtime.h>
 
+
+__global__ void matmulKernel(float* A, float* B, float* C, int N, int M, int P) {
+    int r = blockIdx.x * blockDim.x + threadIdx.x;
+    int c = blockIdx.y * blockDim.y + threadIdx.y;
+    if (r < N && c < P) {
+        float acc = 0;
+        for (int i = 0; i < M; i ++) {
+            acc += A[r * M + i] * B [i * P + c];
+        }
+        C[r * P + c]  = acc;
+    }
+}
+
+void matmulLauncher(float* A, float* B, float* C, int N, int M, int P) {
+    dim3 dimBlock(16, 16, 1);
+    dim3 dimGrid(ceil(N/16), ceil(P/16), 1);
+    matmulKernel<<<dimGrid, dimBlock>>>(A, B, C, N, M, P);
+
+}
+
+
 // CUDA kernel for ReLU activation function
 __global__ void reluKernel(float* input, float* output, int size) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
@@ -25,6 +46,7 @@ __global__ void layerNormKernel(float* input, float* output, int B, int N, int D
         float* offset_in = input + idx * D;
 
         // calculate mean
+        // TODO: 0 vs 0.0f etc?
         float mean = 0;
         for (int i = 0; i < D; i++) {
             mean += *(offset_in + i);
